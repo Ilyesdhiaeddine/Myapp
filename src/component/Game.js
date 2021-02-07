@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import PropTYpes from "prop-types";
+import PropTYpes from 'prop-types';
 
 import { Text, View, StyleSheet } from "react-native";
 
@@ -30,6 +30,7 @@ class Game extends Component {
             selectedNumbers: [...prevState.selectedNumbers, numberIndex],
         }));
 
+
     };
     render() {
         return (
@@ -39,9 +40,10 @@ class Game extends Component {
                     {this.randomNumbers.map((randomnumber, index) =>
                         <RandomNumber
                             key={index}
+                            id={index}
                             number={randomnumber}
                             isDisabled={this.isNumberSelected(index)}
-                            onPess={this.selectNumber}
+                            onPress={this.selectNumber}
                         />
                     )}
                 </View>

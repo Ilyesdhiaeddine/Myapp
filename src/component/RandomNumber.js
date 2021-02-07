@@ -5,11 +5,13 @@ import { Text, TouchableOpacity, StyleSheet } from "react-native";
 
 class RandomNumber extends Component {
     static PropTYpes = {
+        id: PropTYpes.number.isRequired,
         number: PropTYpes.number.isRequired,
         isDisabled: PropTYpes.bool.isRequired,
+        onPress: PropTYpes.func.isRequired,
     };
     handlepress = () => {
-        console.log(this.props.number);
+        this.props.onPress(this.props.id);
     }
     render() {
         return (
