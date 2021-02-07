@@ -13,6 +13,7 @@ class Game extends Component {
         selectedNumbers: [],
     };
 
+
     randomNumbers = Array
         .from({ length: this.props.randomNumberCount })
         .map(() => 1 + Math.floor(10 * Math.random()));
@@ -26,7 +27,7 @@ class Game extends Component {
 
     selectNumber = (numberIndex) => {
         this.setState((prevState) => ({
-            slectedNumbers: [...prevState.slectedNumbers, numberIndex],
+            selectedNumbers: [...prevState.selectedNumbers, numberIndex],
         }));
 
     };
