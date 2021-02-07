@@ -9,21 +9,30 @@ class Game extends Component {
     static PropTYpes = {
         randomNumberCount: PropTYpes.number.isRequired,
     };
+    state = {
+        slectedNumbers: [0, 4],
+    };
 
     randomNumbers = Array
         .from({ length: this.props.randomNumberCount })
         .map(() => 1 + Math.floor(10 * Math.random()));
     target = this.randomNumbers
         .slice(0, this.props.randomNumberCount - 2)
-        .reduce((acc, curr) => acc + curr, 0)
+        .reduce((acc, curr) => acc + curr, 0);
+    isNumberSelected = (numberIndex) => {
+        return this.state.slectedNumbers.indexOf(numberIndex) >= 0;
+    }
     render() {
         return (
             <View style={styles.container}>
                 <Text style={styles.target}>{this.target}</Text>
                 <View style={styles.randomContainer}>
                     {this.randomNumbers.map((randomnumber, index) =>
-                        <RandomNumber key={index} number={randomnumber} />
-
+                        <RandomNumber
+                            key={index}
+                            number={randomnumber}
+                            isSelected={this.isNumberSelected(index)}
+                        />
                     )}
                 </View>
             </View>
