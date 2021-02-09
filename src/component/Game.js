@@ -8,10 +8,13 @@ import RandomNumber from "./RandomNumber";
 class Game extends Component {
     static PropTYpes = {
         randomNumberCount: PropTYpes.number.isRequired,
+        initialSeconds: PropTYpes.number.isRequired,
     };
     state = {
         selectedIds: [],
+        remaningSeconds: this.props.initialSeconds,
     };
+    gameStatus = 'PLAYING';
 
     randomNumbers = Array
         .from({ length: this.props.randomNumberCount })
@@ -20,6 +23,21 @@ class Game extends Component {
     target = this.randomNumbers
         .slice(0, this.props.randomNumberCount - 2)
         .reduce((acc, curr) => acc + curr, 0);
+    componentDidMount() {
+        this.intervalId = setInterval(() => {
+            this.setState((prevState) => {
+                return { remaningSeconds: prevState.remaningSeconds - 1 }
+            }, () => {
+                if (this.state.remaningSeconds === 0) {
+                    clearInterval(this.intervalId);
+                }
+            });
+        }, 1000)
+    }
+    componentWillUnmount() {
+        clearInterval(this.intervalId);
+    }
+
 
     isNumberSelected = (numberIndex) => {
         return this.state.selectedIds.indexOf(numberIndex) >= 0;
@@ -30,10 +48,25 @@ class Game extends Component {
             selectedIds: [...prevState.selectedIds, numberIndex],
         }));
     }
-    gameStatus = () => {
-        const sumSelected = this.state.selectedIds.reduce((acc, curr) => {
+    componentWillUpdate(nextProps, nextState) {
+        if (
+            nextState.selectedIds !== this.state.selectedIds ||
+            nextState.remaningSeconds === 0
+        ) {
+            this.gameStatus = this.calcGameStatus(nextState);
+            if (this.gameStatus !== 'PLAYING') {
+                clearInterval(this.intervalId)
+            }
+        }
+    }
+
+    calcGameStatus = (nextState) => {
+        const sumSelected = nextState.selectedIds.reduce((acc, curr) => {
             return acc + this.randomNumbers[curr];
         }, 0);
+        if (nextState.remaningSeconds === 0) {
+            return ('LOST')
+        }
         if (sumSelected < this.target) {
             return ('PLAYING');
         }
@@ -44,22 +77,22 @@ class Game extends Component {
     };
 
     render() {
-        const gameStatus = this.gameStatus();
+        const gameStatus = this.gameStatus;
         return (
             <View style={styles.container}>
-                <Text style={styles.target}>{this.target}</Text>
+                <Text style={[styles.target, styles[`STATUS_${gameStatus}`]]}>{this.target}</Text>
                 <View style={styles.randomContainer}>
                     {this.randomNumbers.map((randomnumber, index) =>
                         <RandomNumber
                             key={index}
                             id={index}
                             number={randomnumber}
-                            isDisabled={this.isNumberSelected(index)}
+                            isDisabled={this.isNumberSelected(index) || gameStatus !== 'PLAYING'}
                             onPress={this.selectNumber}
                         />
                     )}
                 </View>
-                <Text>{gameStatus} </Text>
+                <Text>{this.state.remaningSeconds} </Text>
             </View>
         );
     }
@@ -89,6 +122,15 @@ const styles = StyleSheet.create({
         marginVertical: 25,
         textAlign: 'center',
         fontSize: 35,
+    },
+    STATUS_PLAYING: {
+        backgroundColor: "#bbb",
+    },
+    STATUS_WON: {
+        backgroundColor: 'green',
+    },
+    STATUS_LOST: {
+        backgroundColor: 'red',
     }
 });
 
